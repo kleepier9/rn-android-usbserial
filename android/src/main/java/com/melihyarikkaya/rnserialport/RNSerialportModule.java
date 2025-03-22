@@ -448,6 +448,17 @@ public class RNSerialportModule extends ReactContextBaseJavaModule {
     serialPort.write(data);
   }
 
+  // Add listnere and remove listener methods are required for RN built-in EventEmitter
+  @ReactMethod
+  public void addListener(String eventName) {
+    // Required for RN built-in EventEmitter
+  }
+
+  @ReactMethod
+  public void removeListeners(Integer count) {
+    // Required for RN built-in EventEmitter
+  }
+
   ///////////////////////////////////////////////USB SERVICE /////////////////////////////////////////////////////////
   ///////////////////////////////////////////////USB SERVICE /////////////////////////////////////////////////////////
 
