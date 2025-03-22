@@ -56,15 +56,25 @@ No Param
 ```javascript
 try {
   const deviceList = await RNSerialport.getDeviceList();
+
   if (deviceList.length > 0) {
-    console.log(deviceList);
+    deviceList.forEach(device => {
+      console.log('USB Device:', {
+        name: device.name,
+        vendorId: device.vendorId,
+        productId: device.productId,
+        manufacturer: device.manufacturerName,
+        product: device.productName,
+        serial: device.serialNumber,
+      });
+    });
   } else {
-    console.log("Device Not Found");
+    console.log('No USB devices found');
   }
 } catch (err) {
   Alert.alert(
-    "Error from getDeviceList()",
-    err.errorCode + " " + err.errorMessage
+    'Error in getDeviceList()',
+    `${err.errorCode} - ${err.errorMessage}`
   );
 }
 ```
@@ -83,7 +93,7 @@ Params:
 | baudRate   | number | yes for call |
 
 ```javascript
-RNSerialport.connectDevice("deviceName", 9600);
+RNSerialport.connectDevice("deviceName", 115200);
 ```
 
 ---
@@ -321,7 +331,7 @@ _Changes baud rate to be used on automatic connection_
 
 `Used before starting the service.`
 
-> Default: 9600
+> Default: 115200
 
 Params:
 

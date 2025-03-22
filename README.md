@@ -28,8 +28,8 @@ npm i @maheshmestri/react-native-serialport
 | KEY                    | VALUE                                    |
 |------------------------|------------------------------------------|
 | RETURNED DATA TYPE     | INT ARRAY (Options: INTARRAY, HEXSTRING) |
-| BAUND RATE             | 9600                                     |
-| AUTO CONNECT BAUD RATE | 9600                                     |
+| BAUND RATE             | 115200                                     |
+| AUTO CONNECT BAUD RATE | 115200                                     |
 | PORT INTERFACE         | -1                                       |
 | DATA BIT               | 8                                        |
 | STOP BIT               | 1                                        |
@@ -38,4 +38,5 @@ npm i @maheshmestri/react-native-serialport
 | DRIVER                 | AUTO                                     |
 
 ### Java Package Name
+Forked from:
  _com.melihyarikkaya.rnserialport_

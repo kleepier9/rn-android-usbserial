@@ -51,7 +51,7 @@ componentDidMount() {
   //.
   RNSerialport.setReturnedDataType(definitions.RETURNED_DATA_TYPES.HEXSTRING);
   RNSerialport.setAutoConnect(true);
-  RNSerialport.setAutoConnectBaudRate(9600);
+  RNSerialport.setAutoConnectBaudRate(115200);
   RNSerialport.startUsbService();
   //Started usb listener
 }
@@ -129,7 +129,7 @@ export default class App extends Component<Props> {
     );
     RNSerialport.setInterface(-1); //default -1
     RNSerialport.setReturnedDataType(definitions.RETURNED_DATA_TYPES.HEXSTRING); //default INTARRAY
-    RNSerialport.setAutoConnectBaudRate(9600)
+    RNSerialport.setAutoConnectBaudRate(115200)
     RNSerialport.setAutoConnect(true) // must be true for auto connect
     RNSerialport.startUsbService(); //start usb listener
   }

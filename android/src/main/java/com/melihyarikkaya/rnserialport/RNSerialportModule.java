@@ -85,12 +85,12 @@ public class RNSerialportModule extends ReactContextBaseJavaModule {
   private int STOP_BIT     = UsbSerialInterface.STOP_BITS_1;
   private int PARITY       =  UsbSerialInterface.PARITY_NONE;
   private int FLOW_CONTROL = UsbSerialInterface.FLOW_CONTROL_OFF;
-  private int BAUD_RATE = 9600;
+  private int BAUD_RATE = 115200;
 
 
   private boolean autoConnect = false;
   private String autoConnectDeviceName;
-  private int autoConnectBaudRate = 9600;
+  private int autoConnectBaudRate = 115200;
   private int portInterface = -1;
   private int returnedDataType = Definitions.RETURNED_DATA_TYPE_INTARRAY;
   private String driver = "AUTO";
@@ -273,34 +273,57 @@ public class RNSerialportModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getDeviceList(Promise promise) {
-    if(!usbServiceStarted) {
-      promise.reject(String.valueOf(Definitions.ERROR_USB_SERVICE_NOT_STARTED), Definitions.ERROR_USB_SERVICE_NOT_STARTED_MESSAGE);
-      return;
-    }
+      if (!usbServiceStarted) {
+          promise.reject(String.valueOf(Definitions.ERROR_USB_SERVICE_NOT_STARTED), Definitions.ERROR_USB_SERVICE_NOT_STARTED_MESSAGE);
+          return;
+      }
 
-    UsbManager manager = (UsbManager) reactContext.getSystemService(Context.USB_SERVICE);
+      UsbManager usbManager = (UsbManager) reactContext.getSystemService(Context.USB_SERVICE);
+      HashMap<String, UsbDevice> devices = usbManager.getDeviceList();
 
-    HashMap<String, UsbDevice> devices = manager.getDeviceList();
+      WritableArray deviceArray = Arguments.createArray();
 
-    if(devices.isEmpty()) {
-      //promise.reject(String.valueOf(Definitions.ERROR_DEVICE_NOT_FOUND), Definitions.ERROR_DEVICE_NOT_FOUND_MESSAGE);
-      promise.resolve(Arguments.createArray());
-      return;
-    }
+      for (Map.Entry<String, UsbDevice> entry : devices.entrySet()) {
+          UsbDevice device = entry.getValue();
 
-    WritableArray deviceList = Arguments.createArray();
-    for(Map.Entry<String, UsbDevice> entry: devices.entrySet()) {
-      UsbDevice d = entry.getValue();
+          WritableMap deviceMap = Arguments.createMap();
+          deviceMap.putString("name", device.getDeviceName());
+          deviceMap.putInt("vendorId", device.getVendorId());
+          deviceMap.putInt("productId", device.getProductId());
+          deviceMap.putInt("deviceId", device.getDeviceId());
 
-      WritableMap map = Arguments.createMap();
-      map.putString("name", d.getDeviceName());
-      map.putInt("vendorId", d.getVendorId());
-      map.putInt("productId", d.getProductId());
+          try {
+              UsbDeviceConnection connection = usbManager.openDevice(device);
+              if (connection != null) {
+                  try {
+                      String manufacturer = device.getManufacturerName();
+                      if (manufacturer != null) {
+                          deviceMap.putString("manufacturerName", manufacturer);
+                      }
 
-      deviceList.pushMap(map);
-    }
+                      String product = device.getProductName();
+                      if (product != null) {
+                          deviceMap.putString("productName", product);
+                      }
 
-    promise.resolve(deviceList);
+                      String serial = device.getSerialNumber();
+                      if (serial != null) {
+                          deviceMap.putString("serialNumber", serial);
+                      }
+                  } catch (Exception ignored) {
+                      // Gracefully ignore inaccessible fields
+                  } finally {
+                      connection.close();
+                  }
+              }
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+
+          deviceArray.pushMap(deviceMap);
+      }
+
+      promise.resolve(deviceArray);
   }
 
   @ReactMethod
